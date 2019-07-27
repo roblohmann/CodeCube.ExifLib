@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CodeCube.ExifLib
+namespace CodeCube.ExifLib.Enumerations
 {
     /// <summary>
     /// All exif tags as per the Exif standard 2.3, JEITA CP-3451C

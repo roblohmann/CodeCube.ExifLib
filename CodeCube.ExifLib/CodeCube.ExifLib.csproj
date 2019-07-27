@@ -7,6 +7,7 @@
     <PackageProjectUrl>https://github.com/roblohmann/CodeCube.ExifLib</PackageProjectUrl>
     <RepositoryUrl>https://github.com/roblohmann/CodeCube.ExifLib</RepositoryUrl>
     <Description>Light-weight library to read exif information from images. This version is a port from the original ExifLib for .NET2.x</Description>
+    <PackageTags>exif jpeg jpg gps</PackageTags>
   </PropertyGroup>
 
 </Project>

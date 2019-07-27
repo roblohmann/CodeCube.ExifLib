@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CodeCube.ExifLib
+namespace CodeCube.ExifLib.Exceptions
 {
     public class ExifLibException : Exception
     {
