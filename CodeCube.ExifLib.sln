@@ -7,12 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		LICENSE = LICENSE
+		nuget-icon.png = nuget-icon.png
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCube.ExifLib", "CodeCube.ExifLib\CodeCube.ExifLib.csproj", "{64742241-2F7E-43D0-90F0-76BA1A543932}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCube.ExifLib.Test", "CodeCube.ExifLib.Test\CodeCube.ExifLib.Test.csproj", "{C84A3EAC-61A7-4638-AC28-7D41B475B810}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCube.ExifLib.Test", "CodeCube.ExifLib.Test\CodeCube.ExifLib.Test.csproj", "{C84A3EAC-61A7-4638-AC28-7D41B475B810}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
