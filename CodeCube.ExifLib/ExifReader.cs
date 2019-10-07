@@ -11,17 +11,23 @@ namespace CodeCube.ExifLib
 
         public JpegInfo info { get; set; }
 
+        [Obsolete("Use Read()-method. ReadJpeg will be removed in a future version.")]
         public static JpegInfo ReadJpeg(Stream stream)
         {
+            return Read(stream);
+        }
+
+        public static JpegInfo Read(Stream stream)
+        {
             DateTime now = DateTime.UtcNow;
-            
+
             return new ExifReader(stream)
             {
-                info = {LoadTime = (DateTime.UtcNow - now)}
+                    info = { LoadTime = (DateTime.UtcNow - now) }
             }.info;
         }
 
-        public ExifReader(Stream stream)
+        private ExifReader(Stream stream)
         {
             info = new JpegInfo();
             if (stream.ReadByte() != byte.MaxValue || stream.ReadByte() != 216)

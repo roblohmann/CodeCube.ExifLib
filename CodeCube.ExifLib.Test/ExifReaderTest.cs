@@ -45,7 +45,7 @@ namespace CodeCube.ExifLib.Test
             // Load a filestream and put its content into the byte[]
             using (FileStream fs = fileInfo.OpenRead())
             {
-                jpegInfo = ExifReader2.ReadJpeg(fs);
+                jpegInfo = ExifReader.Read(fs);
             }
 
             //Assert
@@ -77,7 +77,7 @@ namespace CodeCube.ExifLib.Test
             // Load a filestream and put its content into the byte[]
             using (FileStream fs = fileInfo.OpenRead())
             {
-                var reader = new ExifReader2(fs);
+                var reader = new ExifReaderExtended(fs);
 
                 reader.GetTagValue(ExifTags.GPSLatitude, out latitude);
                 reader.GetTagValue(ExifTags.GPSLongitude, out longitude);

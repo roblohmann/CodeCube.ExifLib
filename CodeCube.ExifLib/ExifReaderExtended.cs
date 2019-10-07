@@ -14,7 +14,7 @@ namespace CodeCube.ExifLib
     /// A class for reading Exif data from a JPEG file. The file will be open for reading for as long as the class exists.
     /// <seealso cref="http://gvsoft.homedns.org/exif/Exif-explanation.html"/>
     /// </summary>
-    public sealed class ExifReader2 : IDisposable
+    public sealed class ExifReaderExtended : IDisposable
     {
         private readonly Stream _stream;
         private readonly BinaryReader _reader;
@@ -59,94 +59,7 @@ namespace CodeCube.ExifLib
 
         private static readonly Dictionary<ushort, IFD> _ifdLookup;
 
-        public JpegInfo info { get; set; }
-        public static JpegInfo ReadJpeg(Stream stream)
-        {
-            DateTime now = DateTime.UtcNow;
-
-            var reader = new ExifReader2(stream)
-            {
-                info = { LoadTime = (DateTime.UtcNow - now) }
-            };
-
-            reader.DoRead();
-
-            return reader.info;
-        }
-
-        private void DoRead()
-        {
-            if (_stream.ReadByte() != byte.MaxValue || _stream.ReadByte() != 216)
-            {
-                return;
-            }
-
-            info.IsValid = true;
-            while (true)
-            {
-                int num1 = 0;
-                int num2 = 0;
-                int marker;
-                while (true)
-                {
-                    marker = _stream.ReadByte();
-                    if (marker == byte.MaxValue || num1 != byte.MaxValue)
-                    {
-                        num1 = marker;
-                        ++num2;
-                    }
-                    else
-                        break;
-                }
-                int num3 = _stream.ReadByte();
-                int num4 = _stream.ReadByte();
-                int length = num3 << 8 | num4;
-                byte[] numArray = new byte[length];
-                numArray[0] = (byte)num3;
-                numArray[1] = (byte)num4;
-                if (_stream.Read(numArray, 2, length - 2) == length - 2)
-                {
-                    switch (marker)
-                    {
-                        case 192:
-                        case 193:
-                        case 194:
-                        case 195:
-                        case 197:
-                        case 198:
-                        case 199:
-                        case 201:
-                        case 202:
-                        case 203:
-                        case 205:
-                        case 206:
-                        case 207:
-                            ProcessSof(numArray);
-                            break;
-                        case 217:
-                            goto label_7;
-                        case 218:
-                            goto label_14;
-                        case 225:
-                            if (numArray[2] == 69 && numArray[3] == 120 && (numArray[4] == 105 && numArray[5] == 102))
-                            {
-                                ProcessExif(numArray);
-                                break;
-                            }
-                            break;
-                    }
-                    GC.Collect();
-                }
-                else
-                    break;
-            }
-            return;
-            label_7:
-            return;
-            label_14:;
-        }
-
-        static ExifReader2()
+        static ExifReaderExtended()
         {
             // Prepare the tag-IFD lookup table
             _ifdLookup = new Dictionary<ushort, IFD>();
@@ -171,16 +84,15 @@ namespace CodeCube.ExifLib
 
         // Windows 8 store apps don't support the FileStream class
 #if !NETFX_CORE
-        public ExifReader2(string fileName)
+        public ExifReaderExtended(string fileName)
             : this(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), false, true)
         {
         }
 #endif
 
-        public ExifReader2(Stream stream)
+        public ExifReaderExtended(Stream stream)
             : this(stream, false, false)
         {
-            info = new JpegInfo(); //TODO: Move to all constructors
         }
 
         // Framework 4.5 gives us the option of leaving the stream open (with the new constructor for BinaryReader). For this framework, we make a new constructor available
@@ -196,7 +108,7 @@ namespace CodeCube.ExifLib
         /// <param name="stream"></param>
         /// <param name="leaveOpen">Indicates whether <see cref="stream"/> should be closed when <see cref="Dispose"/> is called</param>
         /// <param name="internalStream">Indicates whether <see cref="stream"/> was instantiated by this reader</param>
-        private ExifReader2(Stream stream, bool leaveOpen, bool internalStream)
+        private ExifReaderExtended(Stream stream, bool leaveOpen, bool internalStream)
         {
             _stream = stream;
             _leaveOpen = leaveOpen;
@@ -1043,134 +955,5 @@ namespace CodeCube.ExifLib
         }
 
         #endregion
-
-
-
-
-
-
-
-
-
-
-        private void ProcessSof(byte[] section)
-        {
-            info.Height = section[3] << 8 | section[4];
-            info.Width = section[5] << 8 | section[6];
-            info.IsColor = section[7] == 3;
-        }
-        private void ProcessExif(byte[] section)
-        {
-            int num1 = 6;
-            byte[] numArray1 = section;
-            int index1 = num1;
-            int num2 = index1 + 1;
-            if (numArray1[index1] != 0)
-            {
-                return;
-            }
-
-            byte[] numArray2 = section;
-            int index2 = num2;
-            int index3 = index2 + 1;
-            if (numArray2[index2] != 0)
-            {
-                return;
-            }
-
-            if (section[index3] == 73 && section[index3 + 1] == 73)
-            {
-                _isLittleEndian = true;
-            }
-            else
-            {
-                if (section[index3] != 77 || section[index3 + 1] != 77)
-                {
-                    return;
-                }
-                _isLittleEndian = false;
-            }
-            int offset1 = index3 + 2;
-            int num3 = ExifIo.ReadUShort(section, offset1, _isLittleEndian);
-            int offset2 = offset1 + 2;
-            if (num3 != 42)
-            {
-                return;
-            }
-            int num4 = ExifIo.ReadInt(section, offset2, _isLittleEndian);
-            if ((num4 < 8 || num4 > 16) && (num4 < 16 || num4 > section.Length - 16))
-            {
-                return;
-            }
-
-            ProcessExifDir(section, num4 + 8, 8, section.Length - 8, 0, ExifIFD.Exif);
-        }
-
-        private void ProcessExifDir(byte[] section, int offsetDir, int offsetBase, int length, int depth, ExifIFD ifd)
-        {
-            if (depth > 4)
-            {
-                return;
-            }
-
-            ushort num1 = ExifIo.ReadUShort(section, offsetDir, _isLittleEndian);
-            if (offsetDir + 2 + 12 * num1 >= offsetDir + length)
-            {
-                return;
-            }
-
-            for (int num2 = 0; num2 < (int)num1; ++num2)
-            {
-                int sectionOffset = DirOffset(offsetDir, num2);
-                ExifTag exifTag = new ExifTag(section, sectionOffset, offsetBase, length, _isLittleEndian);
-                if (exifTag.IsValid)
-                {
-                    switch (exifTag.Tag)
-                    {
-                        case 34665:
-                            int offsetDir1 = offsetBase + exifTag.GetInt(0);
-                            if (offsetDir1 <= offsetBase + length)
-                            {
-                                ProcessExifDir(section, offsetDir1, offsetBase, length, depth + 1, ExifIFD.Exif);
-                            }
-                            continue;
-                        case 34853:
-                            int offsetDir2 = offsetBase + exifTag.GetInt(0);
-                            if (offsetDir2 <= offsetBase + length)
-                            {
-                                ProcessExifDir(section, offsetDir2, offsetBase, length, depth + 1, ExifIFD.Gps);
-                            }
-                            continue;
-                        default:
-                            exifTag.Populate(info, ifd);
-                            continue;
-                    }
-                }
-            }
-            if (DirOffset(offsetDir, num1) + 4 <= offsetBase + length)
-            {
-                int num2 = ExifIo.ReadInt(section, offsetDir + 2 + 12 * num1, _isLittleEndian);
-                if (num2 > 0)
-                {
-                    int offsetDir1 = offsetBase + num2;
-                    if (offsetDir1 <= offsetBase + length && offsetDir1 >= offsetBase)
-                    {
-                        ProcessExifDir(section, offsetDir1, offsetBase, length, depth + 1, ifd);
-                    }
-                }
-            }
-            if (info.ThumbnailData != null || info.ThumbnailOffset <= 0 || info.ThumbnailSize <= 0)
-            {
-                return;
-            }
-
-            info.ThumbnailData = new byte[info.ThumbnailSize];
-            Array.Copy(section, offsetBase + info.ThumbnailOffset, info.ThumbnailData, 0, info.ThumbnailSize);
-        }
-
-        private static int DirOffset(int start, int num)
-        {
-            return start + 2 + 12 * num;
-        }
     }
 }
