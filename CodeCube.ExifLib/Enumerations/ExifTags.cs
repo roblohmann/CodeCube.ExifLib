@@ -1,4 +1,5 @@
 ﻿using System;
+using CodeCube.ExifLib.Attributes;
 
 namespace CodeCube.ExifLib.Enumerations
 {
@@ -289,23 +290,4 @@ namespace CodeCube.ExifLib.Enumerations
         [IFD(IFD.IFD0)]
         XPSubject = 0x9c9f
     }
-
-    [AttributeUsage(AttributeTargets.Field)]
-    internal class IFDAttribute : Attribute
-    {
-        public readonly IFD IFD;
-
-        public IFDAttribute(IFD ifd)
-        {
-            IFD = ifd;
-        }
-    }
-
-    public enum IFD
-    {
-        IFD0,
-        EXIF,
-        GPS
-    }
-
 }

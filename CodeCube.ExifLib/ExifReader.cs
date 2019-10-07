@@ -7,9 +7,9 @@ namespace CodeCube.ExifLib
 {
     public sealed class ExifReader
     {
-        private bool littleEndian;
+        private bool _isLittleEndian;
 
-        public JpegInfo info { get; set; }
+        public JpegInfo Info { get; set; }
 
         [Obsolete("Use Read()-method. ReadJpeg will be removed in a future version.")]
         public static JpegInfo ReadJpeg(Stream stream)
@@ -23,19 +23,19 @@ namespace CodeCube.ExifLib
 
             return new ExifReader(stream)
             {
-                    info = { LoadTime = (DateTime.UtcNow - now) }
-            }.info;
+                    Info = { LoadTime = (DateTime.UtcNow - now) }
+            }.Info;
         }
 
         private ExifReader(Stream stream)
         {
-            info = new JpegInfo();
+            Info = new JpegInfo();
             if (stream.ReadByte() != byte.MaxValue || stream.ReadByte() != 216)
             {
                 return;
             }
 
-            info.IsValid = true;
+            Info.IsValid = true;
             while (true)
             {
                 int num1 = 0;
@@ -121,7 +121,7 @@ namespace CodeCube.ExifLib
 
             if (section[index3] == 73 && section[index3 + 1] == 73)
             {
-                littleEndian = true;
+                _isLittleEndian = true;
             }
             else
             {
@@ -129,16 +129,16 @@ namespace CodeCube.ExifLib
                 {
                     return;
                 }
-                littleEndian = false;
+                _isLittleEndian = false;
             }
             int offset1 = index3 + 2;
-            int num3 = ExifIo.ReadUShort(section, offset1, littleEndian);
+            int num3 = ExifIo.ReadUShort(section, offset1, _isLittleEndian);
             int offset2 = offset1 + 2;
             if (num3 != 42)
             {
                 return;
             }
-            int num4 = ExifIo.ReadInt(section, offset2, littleEndian);
+            int num4 = ExifIo.ReadInt(section, offset2, _isLittleEndian);
             if ((num4 < 8 || num4 > 16) && (num4 < 16 || num4 > section.Length - 16))
             {
                 return;
@@ -159,7 +159,7 @@ namespace CodeCube.ExifLib
                 return;
             }
 
-            ushort num1 = ExifIo.ReadUShort(section, offsetDir, littleEndian);
+            ushort num1 = ExifIo.ReadUShort(section, offsetDir, _isLittleEndian);
             if (offsetDir + 2 + 12 * num1 >= offsetDir + length)
             {
                 return;
@@ -168,7 +168,7 @@ namespace CodeCube.ExifLib
             for (int num2 = 0; num2 < (int)num1; ++num2)
             {
                 int sectionOffset = DirOffset(offsetDir, num2);
-                ExifTag exifTag = new ExifTag(section, sectionOffset, offsetBase, length, littleEndian);
+                ExifTag exifTag = new ExifTag(section, sectionOffset, offsetBase, length, _isLittleEndian);
                 if (exifTag.IsValid)
                 {
                     switch (exifTag.Tag)
@@ -188,14 +188,14 @@ namespace CodeCube.ExifLib
                             }
                             continue;
                         default:
-                            exifTag.Populate(info, ifd);
+                            exifTag.Populate(Info, ifd);
                             continue;
                     }
                 }
             }
             if (DirOffset(offsetDir, num1) + 4 <= offsetBase + length)
             {
-                int num2 = ExifIo.ReadInt(section, offsetDir + 2 + 12 * num1, littleEndian);
+                int num2 = ExifIo.ReadInt(section, offsetDir + 2 + 12 * num1, _isLittleEndian);
                 if (num2 > 0)
                 {
                     int offsetDir1 = offsetBase + num2;
@@ -205,20 +205,20 @@ namespace CodeCube.ExifLib
                     }
                 }
             }
-            if (info.ThumbnailData != null || info.ThumbnailOffset <= 0 || info.ThumbnailSize <= 0)
+            if (Info.ThumbnailData != null || Info.ThumbnailOffset <= 0 || Info.ThumbnailSize <= 0)
             {
                 return;
             }
 
-            info.ThumbnailData = new byte[info.ThumbnailSize];
-            Array.Copy(section, offsetBase + info.ThumbnailOffset, info.ThumbnailData, 0, info.ThumbnailSize);
+            Info.ThumbnailData = new byte[Info.ThumbnailSize];
+            Array.Copy(section, offsetBase + Info.ThumbnailOffset, Info.ThumbnailData, 0, Info.ThumbnailSize);
         }
 
         private void ProcessSof(byte[] section)
         {
-            info.Height = section[3] << 8 | section[4];
-            info.Width = section[5] << 8 | section[6];
-            info.IsColor = section[7] == 3;
+            Info.Height = section[3] << 8 | section[4];
+            Info.Width = section[5] << 8 | section[6];
+            Info.IsColor = section[7] == 3;
         }
     }
 }

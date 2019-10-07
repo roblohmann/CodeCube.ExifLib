@@ -5,6 +5,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using CodeCube.ExifLib.Attributes;
 using CodeCube.ExifLib.Enumerations;
 using CodeCube.ExifLib.Exceptions;
 
@@ -163,31 +164,27 @@ namespace CodeCube.ExifLib
             catch
             {
                 // Cleanup. Note that the stream is not closed unless it was created internally
-                try
+
+                if (_reader != null)
                 {
-                    if (_reader != null)
-                    {
 #if NETFX_CORE
                         _reader.Dispose();
 #else
-                        _reader.Close();
+                    _reader.Close();
 #endif
-                    }
+                }
 
-                    if (_stream != null)
+                if (_stream != null)
+                {
+                    if (internalStream)
+                        _stream.Dispose();
+                    else if (_stream.CanSeek)
                     {
-                        if (internalStream)
-                            _stream.Dispose();
-                        else if (_stream.CanSeek)
-                        {
-                            // Try to restore the stream to its initial position
-                            _stream.Position = initialPosition;
-                        }
+                        // Try to restore the stream to its initial position
+                        _stream.Position = initialPosition;
                     }
                 }
-                catch
-                {
-                }
+
 
                 throw;
             }
