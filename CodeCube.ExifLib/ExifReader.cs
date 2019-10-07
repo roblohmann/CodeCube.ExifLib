@@ -5,7 +5,7 @@ using CodeCube.ExifLib.Enumerations;
 
 namespace CodeCube.ExifLib
 {
-    public class ExifReader
+    public sealed class ExifReader
     {
         private bool littleEndian;
 
@@ -21,7 +21,7 @@ namespace CodeCube.ExifLib
             }.info;
         }
 
-        protected ExifReader(Stream stream)
+        public ExifReader(Stream stream)
         {
             info = new JpegInfo();
             if (stream.ReadByte() != byte.MaxValue || stream.ReadByte() != 216)
