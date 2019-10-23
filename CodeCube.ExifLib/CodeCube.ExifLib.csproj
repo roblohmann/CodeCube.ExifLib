@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Authors>Rob Lohmann</Authors>
     <Copyright>Copyright Rob Lohmann 2019</Copyright>
     <PackageProjectUrl>https://github.com/roblohmann/CodeCube.ExifLib</PackageProjectUrl>
@@ -10,5 +10,4 @@
     <PackageTags>exif jpeg jpg gps</PackageTags>
     <PackageIconUrl>https://github.com/roblohmann/CodeCube.ExifLib/blob/master/nuget-icon.png?raw=true</PackageIconUrl>
   </PropertyGroup>
-
 </Project>

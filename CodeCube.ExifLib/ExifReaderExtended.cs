@@ -58,48 +58,28 @@ namespace CodeCube.ExifLib
         /// </summary>
         private long _tiffHeaderStart;
 
-        private static readonly Dictionary<ushort, IFD> _ifdLookup;
-
-        static ExifReaderExtended()
-        {
-            // Prepare the tag-IFD lookup table
-            _ifdLookup = new Dictionary<ushort, IFD>();
-
-            var tagType = typeof(ExifTags);
-
-#if !NETFX_CORE
-            var tagFields = tagType.GetFields(BindingFlags.Static | BindingFlags.Public);
-#else
-            var tagFields = System.Linq.Enumerable.Where(tagType.GetRuntimeFields(), x => (x.Attributes | FieldAttributes.Static) == FieldAttributes.Static);
-#endif
-            foreach (var tag in tagFields)
-            {
-#if !NETFX_CORE
-                var ifdAttribute = (IFDAttribute)tag.GetCustomAttributes(typeof(IFDAttribute), false)[0];
-#else
-                var ifdAttribute = (IFDAttribute)tag.GetCustomAttribute(typeof(IFDAttribute), false);
-#endif
-                _ifdLookup[(ushort)tag.GetValue(null)] = ifdAttribute.IFD;
-            }
-        }
+        private static Dictionary<ushort, IFD> _ifdLookup;
 
         // Windows 8 store apps don't support the FileStream class
 #if !NETFX_CORE
         public ExifReaderExtended(string fileName)
             : this(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite), false, true)
         {
+            Init();
         }
 #endif
 
         public ExifReaderExtended(Stream stream)
             : this(stream, false, false)
         {
+            Init();
         }
 
         // Framework 4.5 gives us the option of leaving the stream open (with the new constructor for BinaryReader). For this framework, we make a new constructor available
 #if NET_45_OR_HIGHER
         public ExifReader(Stream stream, bool leaveOpen) : this(stream, leaveOpen, false)
         {
+            Init();
         }
 #endif
 
@@ -950,7 +930,30 @@ namespace CodeCube.ExifLib
                 _stream.Dispose();
             }
         }
-
         #endregion
+
+        private void Init()
+        {
+            // Prepare the tag-IFD lookup table
+            _ifdLookup = new Dictionary<ushort, IFD>();
+
+            var tagType = typeof(ExifTags);
+
+#if !NETFX_CORE
+            var tagFields = tagType.GetFields(BindingFlags.Static | BindingFlags.Public);
+#else
+            var tagFields =
+ System.Linq.Enumerable.Where(tagType.GetRuntimeFields(), x => (x.Attributes | FieldAttributes.Static) == FieldAttributes.Static);
+#endif
+            foreach (var tag in tagFields)
+            {
+#if !NETFX_CORE
+                var ifdAttribute = (IFDAttribute)tag.GetCustomAttributes(typeof(IFDAttribute), false)[0];
+#else
+                var ifdAttribute = (IFDAttribute)tag.GetCustomAttribute(typeof(IFDAttribute), false);
+#endif
+                _ifdLookup[(ushort)tag.GetValue(null)] = ifdAttribute.IFD;
+            }
+        }
     }
 }
