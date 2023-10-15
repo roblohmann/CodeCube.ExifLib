@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net60;net70</TargetFrameworks>
     <Authors>Rob Lohmann</Authors>
-    <Copyright>Copyright Rob Lohmann 2019</Copyright>
+    <Copyright>Copyright Rob Lohmann 2019 - 2023</Copyright>
     <PackageProjectUrl>https://github.com/roblohmann/CodeCube.ExifLib</PackageProjectUrl>
     <RepositoryUrl>https://github.com/roblohmann/CodeCube.ExifLib</RepositoryUrl>
     <Description>Light-weight library to read exif information from images. This version is a port from the original ExifLib for .NET2.x</Description>
