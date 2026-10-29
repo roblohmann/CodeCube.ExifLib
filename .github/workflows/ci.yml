@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: roblohmann/codecube-workflows/.github/workflows/dotnet-ci.yml@v1
+    with:
+      solution: CodeCube.ExifLib.sln

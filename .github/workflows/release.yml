@@ -1,0 +1,44 @@
+name: Release
+
+# Push a tag vX.Y.Z (matching <VersionPrefix> in Directory.Build.props) to publish to nuget.org.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: v
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          prefix=$(grep -oP '(?<=<VersionPrefix>)[^<]+' Directory.Build.props)
+          if [ "$tag" != "$prefix" ]; then
+            echo "::error::Tag v$tag does not match VersionPrefix $prefix in Directory.Build.props"; exit 1
+          fi
+          echo "version=$tag" >> "$GITHUB_OUTPUT"
+
+  pack:
+    needs: version
+    uses: roblohmann/codecube-workflows/.github/workflows/nuget-pack.yml@v1
+    with:
+      project: CodeCube.ExifLib/CodeCube.ExifLib.csproj
+      test-projects: CodeCube.ExifLib.Test/CodeCube.ExifLib.Test.csproj
+      version: ${{ needs.version.outputs.version }}
+
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    environment: nuget.org
+    permissions:
+      id-token: write   # OIDC token for nuget.org Trusted Publishing
+      contents: read
+    steps:
+      - uses: roblohmann/codecube-workflows/.github/actions/nuget-publish@v1
