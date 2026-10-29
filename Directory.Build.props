@@ -1,0 +1,12 @@
+<Project>
+
+  <!-- Centrale package-metadata voor alle projecten in deze repository. Een csproj kan deze waarden overschrijven. -->
+  <PropertyGroup>
+    <Authors>Rob Lohmann</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/roblohmann/CodeCube.ExifLib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/roblohmann/CodeCube.ExifLib</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>
