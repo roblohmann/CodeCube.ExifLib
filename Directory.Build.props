@@ -10,4 +10,12 @@
     <VersionPrefix>1.1.4</VersionPrefix>
   </PropertyGroup>
 
+  <!-- NuGet-audit: controleer ook transitieve packages, waarschuw op elk niveau en laat de build falen op high/critical kwetsbaarheden. -->
+  <PropertyGroup>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+    <WarningsAsErrors>$(WarningsAsErrors);NU1903;NU1904</WarningsAsErrors>
+  </PropertyGroup>
+
 </Project>
