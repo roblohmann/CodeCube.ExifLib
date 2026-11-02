@@ -39,6 +39,6 @@ jobs:
     environment: nuget.org
     permissions:
       id-token: write   # OIDC token for nuget.org Trusted Publishing
-      contents: read
+      contents: write  # GitHub Release
     steps:
       - uses: roblohmann/codecube-workflows/.github/actions/nuget-publish@v1
