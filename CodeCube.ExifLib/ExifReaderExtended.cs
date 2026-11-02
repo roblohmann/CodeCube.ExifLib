@@ -894,7 +894,15 @@ namespace CodeCube.ExifLib
             _stream.Position -= 2;
 
             var imageBytes = new byte[length];
-            _stream.Read(imageBytes, 0, (int)length);
+            var totalBytesRead = 0;
+            while (totalBytesRead < imageBytes.Length)
+            {
+                var bytesRead = _stream.Read(imageBytes, totalBytesRead, imageBytes.Length - totalBytesRead);
+                if (bytesRead <= 0)
+                    break;
+
+                totalBytesRead += bytesRead;
+            }
 
             // A valid JPEG stream ends with 0xFFD9. The stream may be padded at the end with multiple 0xFF or 0x00 bytes.
             int jpegStreamEnd = (int)length - 1;
