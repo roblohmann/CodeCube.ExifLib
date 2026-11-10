@@ -1,40 +1,15 @@
 ﻿using System.IO;
 using CodeCube.ExifLib.Enumerations;
-using NUnit.Framework;
+using Xunit;
 
 namespace CodeCube.ExifLib.Test
 {
-    [TestFixture]
     public sealed class ExifReaderTest
     {
-        //[Test]
-        //public void MinimalTest_GetGPSLocationFromImage_With_JPEGInfo()
-        //{
-        //    //Setup
-        //    JpegInfo jpegInfo;
-        //    FileInfo fileInfo = new FileInfo("london-bridge.jpg");
+        private const double ExpectedLatitude = 14.78;
+        private const double ExpectedLongitude = 28.47;
 
-        //    //Act
-        //    // Load a filestream and put its content into the byte[]
-        //    using (FileStream fs = fileInfo.OpenRead())
-        //    {
-        //        jpegInfo = ExifReader.ReadJpeg(fs);
-        //    }
-
-        //    //Assert
-        //    Assert.IsNotNull(jpegInfo);
-
-        //    var latitude = jpegInfo.GpsLatitude[2];
-        //    var longitude = jpegInfo.GpsLongitude[2];
-
-        //    const double expectedLatitude = 14.78;
-        //    const double expectedLongitude = 28.47;
-
-        //    Assert.AreEqual(expectedLatitude,latitude);
-        //    Assert.AreEqual(expectedLongitude, longitude);
-        //}
-
-        [Test]
+        [Fact]
         public void MinimalTest_GetGPSLocationFromImage_With_JPEGInfo()
         {
             //Setup
@@ -42,39 +17,27 @@ namespace CodeCube.ExifLib.Test
             FileInfo fileInfo = new FileInfo("london-bridge.jpg");
 
             //Act
-            // Load a filestream and put its content into the byte[]
             using (FileStream fs = fileInfo.OpenRead())
             {
                 jpegInfo = ExifReader.Read(fs);
             }
 
             //Assert
-            Assert.IsNotNull(jpegInfo);
-
-            var latitude = jpegInfo.GpsLatitude[2];
-            var longitude = jpegInfo.GpsLongitude[2];
-
-            const double expectedLatitude = 14.78;
-            const double expectedLongitude = 28.47;
-
-            Assert.AreEqual(expectedLatitude, latitude);
-            Assert.AreEqual(expectedLongitude, longitude);
+            Assert.NotNull(jpegInfo);
+            Assert.Equal(ExpectedLatitude, jpegInfo.GpsLatitude[2]);
+            Assert.Equal(ExpectedLongitude, jpegInfo.GpsLongitude[2]);
         }
 
-        [Test]
+        [Fact]
         public void MinimalTest_GetGPSLocationFromImage()
         {
             //Setup
             FileInfo fileInfo = new FileInfo("london-bridge.jpg");
 
-            const double expectedLatitude = 14.78;
-            const double expectedLongitude = 28.47;
-
             double[] latitude;
             double[] longitude;
 
             //Act
-            // Load a filestream and put its content into the byte[]
             using (FileStream fs = fileInfo.OpenRead())
             {
                 var reader = new ExifReaderExtended(fs);
@@ -84,8 +47,8 @@ namespace CodeCube.ExifLib.Test
             }
 
             //Assert
-            Assert.AreEqual(expectedLatitude, latitude[2]);
-            Assert.AreEqual(expectedLongitude, longitude[2]);
+            Assert.Equal(ExpectedLatitude, latitude[2]);
+            Assert.Equal(ExpectedLongitude, longitude[2]);
         }
     }
 }
