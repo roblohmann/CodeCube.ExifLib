@@ -9,6 +9,10 @@ updates:
     groups:
       nuget-minor-patch:
         update-types: [minor, patch]
+    # Major-versies (andere target frameworks, breaking changes) beoordeel ik handmatig.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
